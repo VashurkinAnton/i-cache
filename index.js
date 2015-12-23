@@ -6,21 +6,26 @@ function cache(opts){
 	var storage = {};
 	var expires = opts.expires || 1000 * 60 * 60 * 5; // default cache expires 5 hours
 	var c = {
-		get: function(group, key, cl, data, recall){
+		get: function(group, key, cl, opts){
+			if(!opts){opts = {}};
 			var keyCache = storage[group] && storage[group][key];
 			if(keyCache && ((new Date()).getTime() - keyCache['cTime']) < expires){
 				keyCache['views'] += 1;
 				cl(keyCache['value']);
-			}else if(valueSetters[group] && !recall){
-				var vSetter = valueSetters[group]
-				if(vSetter['async']){
-					vSetter['handler'](key, function(value){
-						c.set(group, key, value);
-						c.get(group, key, cl, data, true);
-					}, data);
+			}else if(valueSetters[group] && !opts.recall){
+				if(!opts.noLoad){
+					var vSetter = valueSetters[group]
+					if(vSetter['async']){
+						vSetter['handler'](key, function(value){
+							c.set(group, key, value);
+							c.get(group, key, cl, {recall: true});
+						}, opts.data);
+					}else{
+						c.set(group, key, vSetter['handler'](key, opts.data));
+						c.get(group, key, cl, {recall: true});
+					}
 				}else{
-					c.set(group, key, vSetter['handler'](key, data));
-					c.get(group, key, cl, data, true);
+					cl(null);
 				}
 			}else{
 				cl(null);

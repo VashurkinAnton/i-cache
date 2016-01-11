@@ -53,7 +53,7 @@ function cache(opts){
 			}
 		},
 		delete: function(group, key){
-			if(storage[group]){
+			if(storage[group] && storage[group][key]){
 				return delete storage[group][key];
 			}
 			return false;

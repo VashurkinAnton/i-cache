@@ -52,6 +52,12 @@ function cache(opts){
 				}
 			}
 		},
+		delete: function(group, key){
+			if(storage[group]){
+				return delete storage[group][key];
+			}
+			return false;
+		},
 		linkSetter: function(groupName, handler){
 			if(!linkSetters[groupName]){
 				linkSetters[groupName] = [];

@@ -1,6 +1,6 @@
 {
   "name": "imp-cache",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Flexible JS cache for any type of data",
   "main": "index.js",
   "scripts": {

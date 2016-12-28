@@ -1,5 +1,6 @@
 var caches = {};
 function cache(opts){
+	var unlink = {};
 	var linkSetters = {};
 	var transformers = {};
 	var valueSetters ={};
@@ -54,9 +55,27 @@ function cache(opts){
 		},
 		delete: function(group, key){
 			if(storage[group] && storage[group][key]){
+				var cacheValue = storage[group][key]['value'];
+				
+				if(unlink[group]){
+					var unlinks = unlink[group](cacheValue);
+					if(!Array.isArray(unlinks)){
+						unlinks = [unlinks];
+					}
+					
+					unlinks.forEach(function(unlinkId){
+						delete storage[group][unlinkId];
+					});
+				}
+
+				cacheValue = null;
+
 				return delete storage[group][key];
 			}
 			return false;
+		},
+		unlink: function(groupName, handler){
+			unlink[groupName] = handler;
 		},
 		linkSetter: function(groupName, handler){
 			if(!linkSetters[groupName]){

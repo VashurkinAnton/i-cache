@@ -97,6 +97,9 @@ function cache(opts){
 		},
 		getCache: function(){
 			return storage;
+		},
+		getValueTransformers: function(groupName){
+			return transformers[groupName] || [];
 		}
 	};
 	return c;
